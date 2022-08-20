@@ -104,12 +104,12 @@ def main():
     if choice == "Local Outlier Factor":   
         header.empty()
         st.empty()
-        st.write("Coming Soon... Try other models)
+        st.write("Coming Soon... Try other models")
         #choose(modelname="Local Outlier Factor",file="LOF.pkl")
     if choice == "COPOD":  
         header.empty()
         st.empty()
-        st.write("Coming Soon... Try other models)
+        st.write("Coming Soon... Try other models")
         #choose(modelname="Copula-Based Outlier Detection (COPOD)",file="COPOD.pkl")
     if choice == "Autoencoder":
         header.empty()
