@@ -3,7 +3,7 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import joblib
-from keras.models import load_model
+#from keras.models import load_model
 import emoji
 import warnings
 warnings.filterwarnings("ignore")
@@ -94,86 +94,23 @@ def main():
                 
                 st.write("Row"+str(i+1)+":  ", "Our model predicted a {}, and it is a {}. {}".format(predicted, actual, show))
 
-    menu = ["<Select One>","Isolation Forest", "Local Outlier Factor", "COPOD", "Autoencoder"]  
+    menu = ["<Select One>","Isolation Forest", "Local Outlier Factor", "COPOD"]  
     choice = st.sidebar.selectbox("Select a Model",menu)
     
     if choice == "<Select One>":
         pass
     if choice == "Isolation Forest":
         choose(modelname="Isolation Forest",file="ISF.pkl")
-    if choice == "Local Outlier Factor":   
+    if choice == "Local Outlier Factor":    
         choose(modelname="Local Outlier Factor",file="LOF.pkl")
-    if choice == "COPOD":  
-        header.empty()
-        st.empty()
-        st.write("Coming Soon... Try other models")
-        #choose(modelname="Copula-Based Outlier Detection (COPOD)",file="COPOD.pkl")
-    if choice == "Autoencoder":
-        header.empty()
-        st.empty()   
-        st.subheader("Deep Autoencoder")
-        
-        number = st.number_input(label="How many predictions would you like to see?",value=0,min_value=0, max_value=10)
-        predict_type = st.radio("How would you want data to be selected?",
-                                ('Random', 'Fraud-only', 'Genuine-only'), index=0)
-
-        def fetchdata(number, type):
-            if isinstance(number, str) or number == 0 or number > 10:
-                pass
-            else:
-                if type == "random":
-                    data = dataset.sample(n = number)
-                    return data
-                elif type == "fraud":
-                    fruaddata = dataset.loc[dataset["Class"] == 1]
-                    return fruaddata.sample(n = number)
-                elif type == "genuine":
-                    genuinedata = dataset.loc[dataset["Class"] == 0]
-                    return genuinedata.sample(n = number)
-                
-        if st.button(label="Fetch data and predict"):
-            if predict_type == 'Random':
-                data = fetchdata(number, "random")
-                st.dataframe(data) 
-                
-            elif predict_type == 'Fraud-only':
-                data = fetchdata(number, "fraud")
-                st.dataframe(data)
-
-            elif predict_type == 'Genuine-only':
-                data = fetchdata(number, "genuine")
-                st.dataframe(data)
-
-            # For prediction
-            autoencoder = load_model('model.h5')
-            X = data.drop(['Class'], axis=1)
-            y = data['Class']
-            predicted = autoencoder.predict(X)
-            mse = np.mean(np.power(X - predicted, 2), axis=1)
-            error_df = pd.DataFrame({'reconstruction_error': mse,
-                                    'true_class': y})
-            predicted = [1 if e > 4.0 else 0 for e in error_df.reconstruction_error.values]
-
-            for i, value in enumerate(predicted):
-                predicted = ""
-                actual = ""
-                
-                if value == 0:
-                    predicted = "Genuine"
-                elif value == 1:
-                    predicted = "Fraud"
-                
-                if data.iloc[i]['Class'] == 1:
-                    actual = "Fraud"
-                elif data.iloc[i]['Class'] == 0:
-                    actual = "Genuine"
-
-                if (predicted == "Genuine" and actual == "Genuine") or (predicted == "Fraud" and actual == "Fraud"):
-                    show = emoji.emojize('Our model did good :white_check_mark:')
-                else:
-                    show = emoji.emojize('Our model did bad :x:')
-                
-                st.write("Row"+str(i+1)+":  ", "Our model predicted a {}, and it is a {}. {}".format(predicted, actual, show))
+    if choice == "COPOD":
+        try:   
+            choose(modelname="Copula-Based Outlier Detection (COPOD)",file="COPOD.pkl")
+        except FileNotFoundError:
+            header.empty()
+            st.empty()   
+            st.subheader("Copula-Based Outlier Detection (COPOD)")
+            st.write("Coming soon...")
              
 if __name__ == '__main__':    
-        main()
+    main()
